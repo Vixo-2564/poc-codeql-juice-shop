@@ -17,6 +17,7 @@ on:
   pull_request:
     branches:
       - qa
+      - dev
       - main
   schedule:
     - cron: '44 7 * * 2'
