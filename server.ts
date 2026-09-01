@@ -687,8 +687,14 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.get('/redirect', performRedirect())
 
   /* Routes for promotion video page */
+  const videoRateLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 30, // limit each IP to 30 requests per window
+    standardHeaders: true,
+    legacyHeaders: false
+  })
   app.get('/promotion', promotionVideo())
-  app.get('/video', getVideo())
+  app.get('/video', videoRateLimiter, getVideo())
 
   /* Routes for profile page */
   app.get('/profile', utils.asyncHandler(getUserProfile()))
