@@ -657,9 +657,13 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.post('/rest/deluxe-membership', security.appendUserId(), utils.asyncHandler(upgradeToDeluxe()))
   app.get('/rest/memories', utils.asyncHandler(getMemories()))
   /* NoSQL API endpoints */
+  const productReviewsUpdateRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+  })
   app.get('/rest/products/:id/reviews', showProductReviews())
   app.put('/rest/products/:id/reviews', utils.asyncHandler(createProductReviews()))
-  app.patch('/rest/products/reviews', security.isAuthorized(), updateProductReviews())
+  app.patch('/rest/products/reviews', security.isAuthorized(), productReviewsUpdateRateLimiter, updateProductReviews())
   app.post('/rest/products/reviews', security.isAuthorized(), utils.asyncHandler(likeProductReviews()))
 
   /* Chat API endpoint */
