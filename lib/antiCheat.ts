@@ -102,7 +102,7 @@ export const calculateCheatScore = (challenge: Challenge, isCheating = false) =>
 
     cheatScore = Math.min(1, cheatScore)
 
-    logger.info(`Cheat score for ${areTightlyCoupled(challenge, previous().challenge) ? 'tightly coupled ' : (isLooselyCoupledToPreviouslySolved(challenge) ? 'loosely coupled ' : (isTrivial(challenge) ? 'trivial ' : ''))}${challenge.tutorialOrder ? 'tutorial ' : ''}${colors.cyan(challenge.key)} solved in ${Math.round(minutesSincePreviousSolve)}min (expected ~${minutesExpectedToSolve}min) with${config.get('challenges.showHints') ? '' : 'out'} hints allowed${percentPrecedingInteraction > -1 ? (' and ' + percentPrecedingInteraction * 100 + '% expected preceding URL interaction') : ''}: ${cheatScore < 0.33 ? colors.green(cheatScore.toString()) : (cheatScore < 0.66 ? colors.yellow(cheatScore.toString()) : colors.red(cheatScore.toString()))}`)
+    logger.info(`Cheat score calculated: solved in ${Math.round(minutesSincePreviousSolve)}min (expected ~${minutesExpectedToSolve}min) with${config.get('challenges.showHints') ? '' : 'out'} hints allowed${percentPrecedingInteraction > -1 ? (' and ' + percentPrecedingInteraction * 100 + '% expected preceding URL interaction') : ''}: ${cheatScore < 0.33 ? colors.green(cheatScore.toString()) : (cheatScore < 0.66 ? colors.yellow(cheatScore.toString()) : colors.red(cheatScore.toString()))}`)
     solves.push({ challenge, phase: 'hack it', timestamp, cheatScore })
     return cheatScore
   }
