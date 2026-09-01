@@ -1,6 +1,5 @@
 import { type Request, type Response } from 'express'
 import * as challengeUtils from '../lib/challengeUtils'
-import * as utils from '../lib/utils'
 import { challenges } from '../data/datacache'
 
 export function checkKeys () {
@@ -27,7 +26,8 @@ export function checkKeys () {
         }
       }
     } catch (error) {
-      res.status(500).json(utils.getErrorMessage(error))
+      console.error('Error in checkKeys route:', error)
+      res.status(500).json({ error: 'Internal Server Error' })
     }
   }
 }
@@ -36,7 +36,8 @@ export function nftUnlocked () {
     try {
       res.status(200).json({ status: challenges.nftUnlockChallenge.solved })
     } catch (error) {
-      res.status(500).json(utils.getErrorMessage(error))
+      console.error('Error in nftUnlocked route:', error)
+      res.status(500).json({ error: 'Internal Server Error' })
     }
   }
 }
