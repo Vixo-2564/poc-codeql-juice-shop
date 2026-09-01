@@ -13,6 +13,35 @@ import { UserModel } from '../models/user'
 import * as utils from '../lib/utils'
 import logger from '../lib/logger'
 
+function isSafeExternalImageUrl (rawUrl: string): boolean {
+  let parsed: URL
+  try {
+    parsed = new URL(rawUrl)
+  } catch {
+    return false
+  }
+
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    return false
+  }
+
+  const hostname = parsed.hostname.toLowerCase()
+
+  if (hostname === 'localhost' || hostname === '::1') {
+    return false
+  }
+
+  if (/^127\./.test(hostname) || /^10\./.test(hostname) || /^192\.168\./.test(hostname) || /^169\.254\./.test(hostname)) {
+    return false
+  }
+
+  if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)) {
+    return false
+  }
+
+  return true
+}
+
 export function profileImageUrlUpload () {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.imageUrl !== undefined) {
@@ -21,7 +50,10 @@ export function profileImageUrlUpload () {
       const loggedInUser = security.authenticatedUsers.get(req.cookies.token)
       if (loggedInUser) {
         try {
-          const response = await fetch(url)
+          if (!isSafeExternalImageUrl(url)) {
+            throw new Error('Blocked unsafe image URL')
+          }
+          const response = await fetch(new URL(url).toString(), { redirect: 'error' })
           if (!response.ok || !response.body) {
             throw new Error('url returned a non-OK status code or an empty body')
           }
