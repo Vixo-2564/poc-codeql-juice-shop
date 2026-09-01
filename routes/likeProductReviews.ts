@@ -53,7 +53,8 @@ export function likeProductReviews () {
         )
         res.json(result)
       } catch (err) {
-        res.status(500).json(err)
+        console.error('Error while liking product review:', err)
+        res.status(500).json({ error: 'Internal server error' })
       }
     } catch (err) {
       res.status(400).json({ error: 'Wrong Params' })
