@@ -1,4 +1,4 @@
-name: CodeQL Advanced 2
+name: CodeQL Scanning
 
 on:
   pull_request:
