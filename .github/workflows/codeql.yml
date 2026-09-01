@@ -15,7 +15,10 @@ on:
   push:
     branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
+    branches:
+    - master
+    - qa
+    - dev
   schedule:
     - cron: '35 5 * * 1'
 
