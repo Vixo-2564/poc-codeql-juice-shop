@@ -691,8 +691,14 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.post('/profile', utils.asyncHandler(updateUserProfile()))
 
   /* Route for vulnerable code snippets */
+  const snippetsVerdictRateLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 30, // limit each IP to 30 requests per window
+    standardHeaders: true,
+    legacyHeaders: false
+  })
   app.get('/snippets/:challenge', utils.asyncHandler(serveCodeSnippet()))
-  app.post('/snippets/verdict', utils.asyncHandler(checkVulnLines()))
+  app.post('/snippets/verdict', snippetsVerdictRateLimiter, utils.asyncHandler(checkVulnLines()))
   app.get('/snippets/fixes/:key', utils.asyncHandler(serveCodeFixes()))
   app.post('/snippets/fixes', utils.asyncHandler(checkCorrectFix()))
 
