@@ -9,7 +9,8 @@ updates:
     directory: "/"
     # Check the npm registry for updates every day (weekdays)
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      target-branch: "dependabot-qa"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -18,3 +19,4 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      target-branch: "dependabot-qa"
