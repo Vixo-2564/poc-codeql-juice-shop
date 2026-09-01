@@ -6,12 +6,69 @@
 import fs from 'node:fs'
 import { Readable } from 'node:stream'
 import { finished } from 'node:stream/promises'
+import { lookup } from 'node:dns/promises'
+import { isIP } from 'node:net'
 import { type Request, type Response, type NextFunction } from 'express'
 
 import * as security from '../lib/insecurity'
 import { UserModel } from '../models/user'
 import * as utils from '../lib/utils'
 import logger from '../lib/logger'
+
+function isPrivateOrLocalIp (ip: string): boolean {
+  const ipVersion = isIP(ip)
+  if (ipVersion === 4) {
+    return /^127\./.test(ip) ||
+      /^10\./.test(ip) ||
+      /^192\.168\./.test(ip) ||
+      /^169\.254\./.test(ip) ||
+      /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip) ||
+      ip === '0.0.0.0'
+  }
+
+  if (ipVersion === 6) {
+    const normalized = ip.toLowerCase()
+    return normalized === '::1' ||
+      normalized === '::' ||
+      normalized.startsWith('fc') ||
+      normalized.startsWith('fd') ||
+      normalized.startsWith('fe80:')
+  }
+
+  return true
+}
+
+async function isSafeExternalImageUrl (rawUrl: string): Promise<boolean> {
+  let parsed: URL
+  try {
+    parsed = new URL(rawUrl)
+  } catch {
+    return false
+  }
+
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    return false
+  }
+
+  const hostname = parsed.hostname.toLowerCase()
+  if (hostname === 'localhost') {
+    return false
+  }
+
+  try {
+    const addresses = await lookup(hostname, { all: true })
+    if (addresses.length === 0) {
+      return false
+    }
+    if (addresses.some(({ address }) => isPrivateOrLocalIp(address))) {
+      return false
+    }
+  } catch {
+    return false
+  }
+
+  return true
+}
 
 export function profileImageUrlUpload () {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +78,10 @@ export function profileImageUrlUpload () {
       const loggedInUser = security.authenticatedUsers.get(req.cookies.token)
       if (loggedInUser) {
         try {
-          const response = await fetch(url)
+          if (!await isSafeExternalImageUrl(url)) {
+            throw new Error('Blocked unsafe image URL')
+          }
+          const response = await fetch(new URL(url).toString(), { redirect: 'error' })
           if (!response.ok || !response.body) {
             throw new Error('url returned a non-OK status code or an empty body')
           }
