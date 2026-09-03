@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import path from 'node:path'
 import yaml from 'js-yaml'
 import { type NextFunction, type Request, type Response } from 'express'
 
@@ -77,8 +78,10 @@ export const checkCorrectFix = () => async (req: Request<Record<string, unknown>
     })
   } else {
     let explanation
-    if (fs.existsSync('./data/static/codefixes/' + key + '.info.yml')) {
-      const codingChallengeInfos = yaml.load(fs.readFileSync('./data/static/codefixes/' + key + '.info.yml', 'utf8'))
+    const fixesRoot = path.resolve(FixesDir)
+    const infoPath = path.resolve(FixesDir, `${key}.info.yml`)
+    if (infoPath.startsWith(fixesRoot + path.sep) && fs.existsSync(infoPath)) {
+      const codingChallengeInfos = yaml.load(fs.readFileSync(infoPath, 'utf8'))
       const selectedFixInfo = codingChallengeInfos?.fixes.find(({ id }: { id: number }) => id === selectedFix + 1)
       if (selectedFixInfo?.explanation) explanation = res.__(selectedFixInfo.explanation)
     }
