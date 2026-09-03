@@ -42,7 +42,7 @@ jobs:
         rm -f $DEST_FILE
         CHALLENGES=$(ls juice-shop/data/static/codefixes/*.info.yml | xargs -n 1 basename | sed 's/\.info\.yml//' | jq -R . | jq -s -c '{"challenges": .}')
         echo $CHALLENGES > $DEST_FILE
-    - uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 #v5.0.1
+    - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d #v7.2.0
       with:
         file_pattern: '_data/challenges.yml _data/snippets.json _data/challenges_dev.yml _data/snippets_dev.json'
         commit_message: "🤖 Auto-update challenges and snippets for ${{ github.ref_name }} from ${{ github.sha }}"
