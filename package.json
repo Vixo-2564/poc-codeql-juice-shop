@@ -115,7 +115,7 @@
     "express-security.txt": "^2.0.0",
     "feature-policy": "^0.6.0",
     "file-stream-rotator": "^1.0.0",
-    "file-type": "^16.5.4",
+    "file-type": "^22.0.2",
     "finale-rest": "^1.2.2",
     "fs-extra": "^9.1.0",
     "glob": "^10.4.5",
