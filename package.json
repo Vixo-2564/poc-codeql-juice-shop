@@ -171,7 +171,7 @@
     "@types/exif": "^0.6.5",
     "@types/express": "^4.17.25",
     "@types/express-jwt": "^6.0.4",
-    "@types/fs-extra": "^9.0.13",
+    "@types/fs-extra": "^11.0.4",
     "@types/glob": "^9.0.0",
     "@types/graceful-fs": "^4.1.9",
     "@types/i18n": "^0.12.0",
